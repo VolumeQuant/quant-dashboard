@@ -1,40 +1,34 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  darkMode: "class",
   theme: {
     extend: {
       colors: {
         surface: {
-          primary: "var(--bg-primary)",
-          card: "var(--bg-card)",
-          hover: "var(--bg-hover)",
-          elevated: "var(--bg-elevated)",
+          deep: "var(--surface-deep)",
+          default: "var(--surface-default)",
+          elevated: "var(--surface-elevated)",
+          hover: "var(--surface-hover)",
+          active: "var(--surface-active)",
         },
         border: {
+          subtle: "var(--border-subtle)",
           DEFAULT: "var(--border-default)",
-          hover: "var(--border-hover)",
+          strong: "var(--border-strong)",
         },
-        content: {
-          primary: "var(--text-primary)",
-          secondary: "var(--text-secondary)",
-          tertiary: "var(--text-tertiary)",
-        },
-        positive: "var(--positive)",
-        negative: "var(--negative)",
-        factor: {
-          value: "var(--factor-value)",
-          quality: "var(--factor-quality)",
-          growth: "var(--factor-growth)",
-          momentum: "var(--factor-momentum)",
+        signal: {
+          green: "var(--signal-green)",
+          red: "var(--signal-red)",
+          amber: "var(--signal-amber)",
+          blue: "var(--signal-blue)",
         },
       },
       fontFamily: {
-        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        sans: ["Pretendard Variable", "Pretendard", "Inter", "system-ui", "-apple-system", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "Cascadia Code", "Source Code Pro", "monospace"],
       },
       maxWidth: {
-        dashboard: "1280px",
+        content: "1440px",
       },
     },
   },

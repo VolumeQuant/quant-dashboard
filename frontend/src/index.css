@@ -4,48 +4,34 @@
 
 @layer base {
   :root {
-    /* Light mode */
-    --bg-primary: #F7F8FA;
-    --bg-card: #FFFFFF;
-    --bg-hover: #F0F1F5;
-    --bg-elevated: #E8E9ED;
-    --border-default: #E2E4E9;
-    --border-hover: #CBD0D8;
-    --text-primary: #1A1D26;
-    --text-secondary: #6B7080;
-    --text-tertiary: #9CA3B0;
-    --positive: #00A870;
-    --negative: #E5384B;
-    --factor-value: #3B82F6;
-    --factor-quality: #8B5CF6;
-    --factor-growth: #06B6D4;
-    --factor-momentum: #F59E0B;
-  }
-
-  .dark {
-    --bg-primary: #0F1117;
-    --bg-card: #161A25;
-    --bg-hover: #1C2030;
-    --bg-elevated: #232838;
-    --border-default: #2A2E3B;
-    --border-hover: #3D4254;
-    --text-primary: #E8EAED;
-    --text-secondary: #8B8FA3;
-    --text-tertiary: #5C6070;
-    --positive: #00C087;
-    --negative: #FF4757;
-    --factor-value: #3B82F6;
-    --factor-quality: #8B5CF6;
-    --factor-growth: #06B6D4;
-    --factor-momentum: #F59E0B;
+    --surface-deep: #0B1120;
+    --surface-default: #111827;
+    --surface-elevated: #1E293B;
+    --surface-hover: #283548;
+    --surface-active: #334155;
+    --border-subtle: #1E293B;
+    --border-default: #2D3B4E;
+    --border-strong: #475569;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-tertiary: #64748B;
+    --text-muted: #475569;
+    --signal-green: #34D399;
+    --signal-red: #F87171;
+    --signal-amber: #FBBF24;
+    --signal-blue: #60A5FA;
+    --season-spring: #F9A8D4;
+    --season-summer: #FCD34D;
+    --season-autumn: #FB923C;
+    --season-winter: #93C5FD;
   }
 
   html {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Pretendard Variable', 'Pretendard', 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   body {
-    background-color: var(--bg-primary);
+    background-color: var(--surface-deep);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -54,89 +40,52 @@
 
 @layer components {
   .card {
-    @apply rounded-xl border transition-colors;
-    background-color: var(--bg-card);
-    border-color: var(--border-default);
+    background-color: var(--surface-default);
+    border: 1px solid var(--border-default);
+    border-radius: 0.75rem;
+    transition: border-color 0.15s;
   }
-
-  .card-hover:hover {
-    border-color: var(--border-hover);
-    background-color: var(--bg-hover);
+  .card:hover {
+    border-color: rgba(52, 211, 153, 0.2);
   }
-
-  .text-primary {
-    color: var(--text-primary);
-  }
-
-  .text-secondary {
-    color: var(--text-secondary);
-  }
-
-  .text-tertiary {
-    color: var(--text-tertiary);
-  }
-
-  .font-mono-num {
-    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; background: var(--surface-deep); }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 3px;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
+.animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+.animate-slide-up-delay-1 { animation: slideUp 0.4s ease-out 0.1s forwards; opacity: 0; }
+.animate-slide-up-delay-2 { animation: slideUp 0.4s ease-out 0.2s forwards; opacity: 0; }
+.animate-slide-up-delay-3 { animation: slideUp 0.4s ease-out 0.3s forwards; opacity: 0; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
-}
-
-/* Recharts tooltip override for dark mode */
-.dark .recharts-default-tooltip {
-  background-color: #1C2030 !important;
-  border: 1px solid #2A2E3B !important;
-  border-radius: 8px !important;
-}
-
-.dark .recharts-tooltip-label {
-  color: #E8EAED !important;
-}
-
-.dark .recharts-cartesian-axis-tick-value {
-  fill: #8B8FA3 !important;
-}
-
-.dark .recharts-cartesian-grid line {
-  stroke: #2A2E3B !important;
-}
-
-.dark .recharts-legend-item-text {
-  color: #8B8FA3 !important;
-}
-
-/* Light mode recharts */
-:root .recharts-default-tooltip {
-  border-radius: 8px !important;
-}
-
-/* Skeleton animation */
+/* Skeleton */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
-
 .skeleton {
-  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+  background: linear-gradient(90deg, var(--surface-default) 25%, var(--surface-elevated) 50%, var(--surface-default) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
 }
+
+/* Glow effects */
+.glow-green { box-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
+.glow-red { box-shadow: 0 0 8px rgba(248, 113, 113, 0.6); }
+.glow-amber { box-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
