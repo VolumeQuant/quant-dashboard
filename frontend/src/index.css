@@ -2,6 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+@layer base {
+  :root {
+    /* Light mode */
+    --bg-primary: #F7F8FA;
+    --bg-card: #FFFFFF;
+    --bg-hover: #F0F1F5;
+    --bg-elevated: #E8E9ED;
+    --border-default: #E2E4E9;
+    --border-hover: #CBD0D8;
+    --text-primary: #1A1D26;
+    --text-secondary: #6B7080;
+    --text-tertiary: #9CA3B0;
+    --positive: #00A870;
+    --negative: #E5384B;
+    --factor-value: #3B82F6;
+    --factor-quality: #8B5CF6;
+    --factor-growth: #06B6D4;
+    --factor-momentum: #F59E0B;
+  }
+
+  .dark {
+    --bg-primary: #0F1117;
+    --bg-card: #161A25;
+    --bg-hover: #1C2030;
+    --bg-elevated: #232838;
+    --border-default: #2A2E3B;
+    --border-hover: #3D4254;
+    --text-primary: #E8EAED;
+    --text-secondary: #8B8FA3;
+    --text-tertiary: #5C6070;
+    --positive: #00C087;
+    --negative: #FF4757;
+    --factor-value: #3B82F6;
+    --factor-quality: #8B5CF6;
+    --factor-growth: #06B6D4;
+    --factor-momentum: #F59E0B;
+  }
+
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border transition-colors;
+    background-color: var(--bg-card);
+    border-color: var(--border-default);
+  }
+
+  .card-hover:hover {
+    border-color: var(--border-hover);
+    background-color: var(--bg-hover);
+  }
+
+  .text-primary {
+    color: var(--text-primary);
+  }
+
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+
+  .text-tertiary {
+    color: var(--text-tertiary);
+  }
+
+  .font-mono-num {
+    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Recharts tooltip override for dark mode */
+.dark .recharts-default-tooltip {
+  background-color: #1C2030 !important;
+  border: 1px solid #2A2E3B !important;
+  border-radius: 8px !important;
+}
+
+.dark .recharts-tooltip-label {
+  color: #E8EAED !important;
+}
+
+.dark .recharts-cartesian-axis-tick-value {
+  fill: #8B8FA3 !important;
+}
+
+.dark .recharts-cartesian-grid line {
+  stroke: #2A2E3B !important;
+}
+
+.dark .recharts-legend-item-text {
+  color: #8B8FA3 !important;
+}
+
+/* Light mode recharts */
+:root .recharts-default-tooltip {
+  border-radius: 8px !important;
+}
+
+/* Skeleton animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
 }
