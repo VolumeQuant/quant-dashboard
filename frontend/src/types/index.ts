@@ -72,7 +72,7 @@ export interface DeathListItem {
   yesterday_rank: number;
   today_rank: number | null;
   dropped_out: boolean;
-  exit_reason?: string[];
+  exit_reason?: string;
 }
 
 export interface DeathListResponse {
@@ -127,21 +127,39 @@ export interface CreditData {
   action?: ActionData | null;
 }
 
+export interface PickLevel {
+  max_picks: number;
+  label: string;
+  warning: string | null;
+}
+
 export interface MarketResponse {
   indices: {
     kospi: IndexData | null;
     kosdaq: IndexData | null;
   };
   credit: CreditData | null;
+  pick_level?: PickLevel | null;
   warnings: string[];
   date: string;
 }
 
 /* ───────────── Pipeline ───────────── */
+export interface PipelineStock {
+  ticker: string;
+  name: string;
+  sector: string;
+  rank: number;
+  composite_rank: number;
+  score: number;
+  status: string;
+  [key: string]: unknown;
+}
+
 export interface PipelineResponse {
-  verified: string[];
-  pending: string[];
-  new_entry: string[];
+  verified: PipelineStock[];
+  pending: PipelineStock[];
+  new_entry: PipelineStock[];
   sectors: Record<string, number>;
 }
 

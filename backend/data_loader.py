@@ -235,6 +235,7 @@ def _market_from_cache(cache: dict) -> dict:
     final_action = credit_raw.get("final_action", "")
     concordance = credit_raw.get("concordance", "both_stable")
     action_grade = _action_to_grade(final_action)
+    pick_level = _compute_pick_level(final_action)
 
     return {
         "indices": indices,
@@ -248,6 +249,7 @@ def _market_from_cache(cache: dict) -> dict:
                 "grade": action_grade,
             },
         },
+        "pick_level": pick_level,
         "warnings": market_raw.get("warnings", []),
         "date": cache.get("date", ""),
     }
@@ -303,6 +305,7 @@ def _market_from_live() -> dict:
     final_action = credit.get("final_action", "")
     concordance = credit.get("concordance", "both_stable")
     action_grade = _action_to_grade(final_action)
+    pick_level = _compute_pick_level(final_action)
 
     dates = get_available_dates()
     return {
@@ -320,6 +323,7 @@ def _market_from_live() -> dict:
                 "grade": action_grade,
             },
         },
+        "pick_level": pick_level,
         "warnings": [],
         "date": dates[0] if dates else "",
     }
@@ -343,9 +347,38 @@ def _market_empty() -> dict:
                 "grade": "unknown",
             },
         },
+        "pick_level": {"max_picks": 5, "label": "정상", "warning": None},
         "warnings": [],
         "date": dates[0] if dates else "",
     }
+
+
+def _compute_pick_level(action_text: str) -> dict:
+    """시장 위험 상태에 따른 추천 종목 수 결정 (v20.4)"""
+    if not action_text:
+        return {'max_picks': 5, 'label': '정상', 'warning': None}
+    if '즉시 매도' in action_text:
+        return {'max_picks': 0, 'label': '전량 매도',
+                'warning': '🚨 시장 위험으로 매수를 중단합니다. 보유 종목 매도를 검토하세요.'}
+    elif '매도하세요' in action_text:
+        return {'max_picks': 0, 'label': '매도',
+                'warning': '⚠️ 시장 위험으로 매수를 중단합니다. 보유 종목 매도를 검토하세요.'}
+    elif '멈추' in action_text:
+        return {'max_picks': 0, 'label': '매수 중단',
+                'warning': '⚠️ 시장 위험으로 신규 매수를 중단합니다.'}
+    elif '관망' in action_text:
+        return {'max_picks': 0, 'label': '관망',
+                'warning': '시장 불확실성으로 관망합니다.'}
+    elif '줄이' in action_text:
+        return {'max_picks': 3, 'label': '축소',
+                'warning': '⚠️ 시장 경고로 추천을 3종목으로 축소합니다.'}
+    elif '분할 매수' in action_text:
+        return {'max_picks': 3, 'label': '분할 매수', 'warning': None}
+    elif '신중' in action_text:
+        return {'max_picks': 5, 'label': '신중',
+                'warning': '신규 매수 시 신중하세요.'}
+    else:
+        return {'max_picks': 5, 'label': '정상', 'warning': None}
 
 
 def _action_to_grade(action_text: str) -> str:
@@ -889,15 +922,26 @@ def _deathlist_from_rankings(top_n: int = 50) -> dict:
 
 
 def _compute_exit_reason_inline(t0_item: dict, t1_item: dict) -> str:
-    """이탈 종목의 사유 태그 계산 — V/Q/M 스코어 비교"""
+    """이탈 종목의 사유 태그 — 전망 vs 가격 이진 분류 (v20.1)"""
     tags = []
-    for key, label in [("value_s", "V"), ("quality_s", "Q"), ("momentum_s", "M")]:
-        s0 = t0_item.get(key)
-        s1 = t1_item.get(key)
-        if s0 is not None and s1 is not None:
-            if s0 < s1 - 0.05:  # 의미 있는 하락만
-                tags.append(f"{label}\u2193")
-    return " ".join(tags) if tags else ""
+
+    # 전망 (Forward EPS 컨센서스 변화)
+    p0, fwd0 = t0_item.get('price'), t0_item.get('fwd_per')
+    p1, fwd1 = t1_item.get('price'), t1_item.get('fwd_per')
+    eps0 = p0 / fwd0 if p0 and fwd0 and fwd0 > 0 else None
+    eps1 = p1 / fwd1 if p1 and fwd1 and fwd1 > 0 else None
+    if eps0 is not None and eps1 is not None and eps1 != 0:
+        eps_chg = (eps0 - eps1) / abs(eps1)
+        if abs(eps_chg) >= 0.03:
+            tags.append('💪전망↑' if eps_chg > 0 else '⚠️전망↓')
+
+    # 가격 (실제 주가 비교)
+    if p0 and p1 and p1 > 0:
+        pct = (p0 - p1) / p1
+        if abs(pct) >= 0.03:
+            tags.append('📈가격↑' if pct > 0 else '📉가격↓')
+
+    return ' '.join(tags) if tags else ''
 
 
 # ============================================================
